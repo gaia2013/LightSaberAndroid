@@ -9,7 +9,10 @@ import android.media.AudioAttributes
 import android.media.SoundPool
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.RadioButton
 import android.widget.ToggleButton
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
@@ -25,14 +28,16 @@ class MainActivity : AppCompatActivity() {
     private var audioFive: Int by Delegates.notNull() //  振った時の音4
 
     private lateinit var toggleButton: ToggleButton
+    private lateinit var radioButton1: RadioButton
+    private lateinit var radioButton2: RadioButton
+    private lateinit var radioButton3: RadioButton
+    private lateinit var radioButton4: RadioButton
 
     private var startAccel: Boolean = false // 降っている最中か否か
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main) //viewが設定される
-
-        
 
         mgr = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         // 加速度センサーを取得する
@@ -42,6 +47,10 @@ class MainActivity : AppCompatActivity() {
 
         // レイアウトからボタンを取得する
         toggleButton = findViewById(R.id.toggleButton)
+        radioButton1 = findViewById(R.id.radioButton1)
+        radioButton2 = findViewById(R.id.radioButton2)
+        radioButton3 = findViewById(R.id.radioButton3)
+        radioButton4 = findViewById(R.id.radioButton4)
 
         var attrs = AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_GAME)
@@ -91,21 +100,29 @@ class MainActivity : AppCompatActivity() {
             if (!startAccel && synthetic > 8) {
                 startAccel = true
 
+                val checkedRadioButton = findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
+
                 soundPool.play(
-                        audioTwo,
-                        1f,
-                        1f,
-                        1,
-                        0,
-                        1f
+                    when(checkedRadioButton){
+                        radioButton1 -> audioTwo
+                        radioButton2 -> audioThree
+                        radioButton3 -> audioFour
+                        radioButton4 -> audioFive
+                        else -> audioTwo
+                    },
+                    1f,
+                    1f,
+                    1,
+                    0,
+                    1f
                 )
+
             } else if (startAccel && synthetic < 1) {
                 startAccel = false
             }
         }
 
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-
         }
     }
 
